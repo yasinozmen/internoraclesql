@@ -1,0 +1,1515 @@
+-- TABLO OLU�TURMA
+/*TABLO OLU�TURMA*/
+
+CREATE TABLE student
+(
+  std_id CHAR(3),
+  std_name VARCHAR2(20),
+  std_age NUMBER 
+);
+
+INSERT INTO student VALUES('101','AHMET CAN',30);
+INSERT INTO student VALUES('102','MUSTAFA AL�',20);
+INSERT INTO student VALUES('103','AY�E YILMAZ',18);
+INSERT INTO student VALUES('104','MEL�H G�R',40);
+
+--par�al� veri giri�i 
+-- girmedi�in de�er null atan�r
+--INSERT INTO student(std_id,std_name) VALUES('105', 'JOHN TRAVOLTA');
+--DROP TABLE student; se�ip run edersen student tablosunu siler.
+
+SELECT * FROM student;
+
+CREATE TABLE urunler(
+ urun_id NUMBER,
+ urun_ad� VARCHAR(50),
+ fiyat NUMBER(5,2),
+ tett DATE,
+ stok_adedi NUMBER(10)
+);
+
+INSERT INTO urunler VALUES(100,'C�PS', 5.50,'01-05-2022',500);
+INSERT INTO urunler VALUES(101,'KOLA', 7.50,'02-04-2025',500);
+INSERT INTO urunler VALUES(100,'AYRAN', 2.50,'01-07-2021',1000);
+INSERT INTO urunler VALUES(100,'B�SK�V�', 3.50,'01-08-2022',2000);
+
+SELECT * FROM urunler;
+
+CREATE TABLE calisanlar
+(
+  id CHAR(5) PRIMARY KEY,
+  isim VARCHAR2(50),
+  maas NUMBER(5),
+  ise_baslama DATE
+ );
+ INSERT INTO calisanlar VALUES('10001','Ahmet Aslan', 7000,'13-04-2018');
+ INSERT INTO calisanlar VALUES('10002','Mehmet Y�lmaz', 12000,'14-04-2018');
+ INSERT INTO calisanlar VALUES('10003','', 5000,'14-04-2018');
+ INSERT INTO calisanlar VALUES('10004','Veli Han', 5000,'14-04-2018');
+ INSERT INTO calisanlar VALUES('10005','Mustafa Ali', 5000,'14-04-2018');
+ INSERT INTO calisanlar VALUES('10006','Canan Ya�', 4000,'12-04-2018');
+ 
+ SELECT * FROM calisanlar;
+ DROP TABLE personel;
+ 
+ DELETE calisanlar
+ WHERE id='10001'; 
+ 
+ ---------------------------------------------------
+ --alternatif primary key taqn�mlama y�ntemi
+ -- CONSTRAINT NAME � DE���T�REB�L�R�Z
+ --CONSTRAINT SATIRININ SONUNA D�SABLE DERSEK PK YI KAPATAB�LR�Z
+ CREATE TABLE calisanlar
+(
+  id CHAR(5),
+  isim VARCHAR2(50),
+  maas NUMBER(5),
+  ise_baslama DATE,
+  CONSTRAINT id_pk PRIMARY KEY(id) DISABLE
+ );
+ 
+ 
+ CREATE TABLE adresler
+(
+  adres_id CHAR(5) REFERENCES calisanlar(id),
+  sokak VARCHAR2(50),
+  cadde VARCHAR2(30),
+  sehir VARCHAR2(15)
+  
+ );
+ -- pk ve fk n�n ayn� uzunlukta olmas� laz�m 
+ 
+ INSERT INTO adresler VALUES('10001','mutlu sok', '40.cadde', '�st');
+ INSERT INTO adresler VALUES('10002','can sok', '50.cadde','ank');
+ INSERT INTO adresler VALUES('10003','aga sok', '30.cadde','antep');
+ 
+ SELECT * FROM adresler;
+ SELECT * FROM calisanlar;
+ 
+ --parentte olmayan id ye childe ekleme yap�lamaz referans g�sterilmez
+ --parent� silmeye �al���rsan hata verir �nce childin silinmesi laz�m
+ 
+ SELECT * FROM calisanlar, adresler
+ WHERE id ='10001';
+ -- parenttaki 10001 pk ya ait t�m bilgileri g�rd�k
+ -- ama adresdeki her bilgi geldi onun i�in filtreleme var * yerine 
+ -- bi�eyler yazarak sadece istenenleri g�rebilriz sonra g�rece�iz
+ -- * HER�EY� G�STER�R
+ -- fk tan�mlama ikinci y�ntem
+ --fk ya isim verdik ve istersek sonuna disable yazrak pasif yapabliriz
+ 
+ 
+ CREATE TABLE adresler
+(
+  adres_id CHAR(5) REFERENCES calisanlar(id),
+  sokak VARCHAR2(50),
+  cadde VARCHAR2(30),
+  sehir VARCHAR2(15),
+  CONSTRAINT id_fk FOREIGN KEY (adres_id) REFERENCES calisanlar(id)
+ );
+ 
+ 
+ CREATE TABLE sehirler
+(
+  alan_kodu NUMBER(3) DEFAULT 34, 
+  isim VARCHAR2(20) DEFAULT '�STANBUL',
+  nufus NUMBER(8) CHECK(nufus>0)
+  
+ 
+ );
+ 
+ INSERT INTO sehirler VALUES (54, 'SAKARYA',125000);
+ INSERT INTO sehirler VALUES ('', '',1000000);
+ 
+ --PARCALI VER� G�RT��� YAPRASAN DEFAULTTA YAZDIGIN �ALI�IR
+ -- TAM G�R�� YAPARSAN NULL YAZAR O Y�ZDEN 3 SATIR �STTEK� 122 DEK� NULL YAZAR
+ 
+ 
+ INSERT INTO sehirler (nufus) VALUES (5000000);
+ 
+ 
+ -- istnen �artlardaki veriyi g�sterme
+  CREATE TABLE ogrenciler
+(
+  id NUMBER(9) , 
+  isim VARCHAR2(50),
+  adres VARCHAR2(100),
+  sinav_notu NUMBER(3)
+ 
+ );
+ 
+ INSERT INTO ogrenciler VALUES(123,'ali can', 'ankara', 75);
+ INSERT INTO ogrenciler VALUES(124,'merve gul', 'ankara',85);
+ INSERT INTO ogrenciler VALUES(125,'kemal yasa', 'istanbul',85);
+ 
+ SELECT * FROM ogrenciler
+ WHERE sinav_notu>80;
+ -- notu 80 den b�y�k olanlar�n her�eyini g�steren kod her�eyini
+ -- g�stermesini * sa�lar
+  SELECT isim,sinav_notu
+  FROM ogrenciler
+  WHERE sinav_notu>80;
+ -- selectewn sonra istedi�miiz �eyi yazr�z
+ 
+ DELETE ogrenciler
+ WHERE id=125;
+ -- ogrencilerden id si 125 olanlar� silen kod
+ SELECT * FROM ogrenciler
+ WHERE adres='ankara';
+ -- adresi ankara olanlar�n her�eyuini g�steren kod
+ -- de�erleri girerken case sansitive �nemli komutlarda de�il
+ SELECT * FROM ogrenciler
+ WHERE id=124;
+ -- < > e�it de�ilmi operat�r� 
+ -- AND OR BETWEEN IN L�KE bu �ekilde yaz�l�r
+ 
+ CREATE TABLE personel(
+  id CHAR(5),
+  isim VARCHAR2(50),
+  maas NUMBER(5)
+ );
+ 
+ INSERT INTO personel VALUES('10001','ahmet aslan', 7000);
+ INSERT INTO personel VALUES('10002','mehmet y�lmaz', 12000);
+ INSERT INTO personel VALUES('10003','meryem', 7215);
+ INSERT INTO personel VALUES('10004','veli han', 5000);
+ INSERT INTO personel VALUES('10005','mustafa ali', 5500);
+ INSERT INTO personel VALUES('10005','ay�e can', 4000);
+
+SELECT * FROM personel;
+-- id si 10002 10005 aras�ndaklileri her�eyini
+SELECT * FROM personel
+WHERE id>= '10002' AND id<='10005';
+-------BETWEEN---------
+SELECT id, isim
+FROM personel 
+WHERE id BETWEEN '10002' AND '10005';
+-- ALT VE �ST L�M�T DAH�L
+-- AND �LE B�Y�K K���K E��TT�R AYARLANAB�L�R AMA BETWEENDE DAH�L DE���MEZ
+
+-- MEHMET YILO. VEL� HAN ARASINDAK� B�LGLER� L�STELE
+
+SELECT * FROM personel
+WHERE isim BETWEEN 'mehmet y�lmaz' AND 'veli han';
+
+-- 10002 10004 aras�nda olmayanlar� 
+
+SELECT * FROM personel
+WHERE id NOT BETWEEN '10002' AND '10004';
+
+----------IN---------
+--ARALIK DE��LDE SE�MECE ALMAK ���N 1 5 ARASI OLURSA 2  3 4 GEL�R
+-- AMA BEN 3 4 � �ST�YORUM
+-- id 10002 10004 olanlar�
+SELECT * FROM personel
+WHERE id= '10001' OR id = '10002' OR id='10004'; 
+--�n y�ntemiyle
+
+SELECT * FROM personel
+WHERE id IN('10001','10002','10004');
+
+-- MAASI SADECE 7K 12K OLANLARI AL
+
+SELECT * FROM personel
+WHERE maas IN(7000,12000);
+
+-----------LIKE-----------
+--%  ya bas��n tamam� ya sonun tamam� sola koyarsan ba�layan sa�a koyarsan biten
+-- %an% arada an ge�enleri g�styer
+--  _     _li% 1. harf �nemsiz 2 l 3 i sonra her�ey olu�r
+-- _li 3 harfli olacak 2 l 3 i olacak 
+-- _a%y%  ilk harf �nemsiz 2. harf a ve i�inde y ge�en 
+-- __r___ 1 2 �nemsiz 3. harf r 4 5 6 �nemsiz ama 6 dan fazla olamaz
+-- where maas like '_____'  maas� 5 haneli olanlar� g�ster not like yazrsam g�sterme demek olur
+-- maas number t�rnakm olmaz ama karakter ararken '___-' t�rnak olur
+
+SELECT * FROM personel
+WHERE isim LIKE  'M%'  ;-- m ile ba�layta
+
+SELECT * FROM personel
+WHERE isim LIKE  '______'  ;-- 6 haneli
+
+SELECT * FROM personel
+WHERE isim LIKE  '_e%'  ;-- 2.harfi e
+
+SELECT * FROM personel
+WHERE maas LIKE  '%00'  ; -- maas�n son 2 hanesi 00 olan
+
+SELECT * FROM personel
+WHERE isim LIKE  'a_____a%'  ;-- 1.harfi ve 7. a
+
+SELECT * FROM personel
+WHERE isim LIKE  '%an%'  ;-- isminde an ge�enler
+
+SELECT * FROM personel
+WHERE maas NOT LIKE  '____'  ;-- MAASI 4 BAS OLMAYAN
+
+----------------------------------------
+-- DAHA KARMA�IK PATTERN �LE SORGULAMA REGEXP_LIKE �LE YAPILIR
+
+CREATE TABLE kelimeler(
+ id number(10) UNIQUE,
+ kelime VARCHAR2(50) NOT NULL,
+ harf_sayisi NUMBER(6)
+);
+
+INSERT INTO kelimeler VALUES(1001,'hot',3);
+INSERT INTO kelimeler VALUES(1002,'hat',3);
+INSERT INTO kelimeler VALUES(1003,'hit',3);
+INSERT INTO kelimeler VALUES(1004,'hbt',3);
+INSERT INTO kelimeler VALUES(1005,'hct',3);
+INSERT INTO kelimeler VALUES(1006,'adem',4);
+INSERT INTO kelimeler VALUES(1007,'selim',5);
+INSERT INTO kelimeler VALUES(1008,'yusuf',5);
+INSERT INTO kelimeler VALUES(1009,'hip',3);
+INSERT INTO kelimeler VALUES(1010,'HOT',3);
+INSERT INTO kelimeler VALUES(1011,'hOt',3);
+INSERT INTO kelimeler VALUES(1012,'h9t',3);
+INSERT INTO kelimeler VALUES(1013,'hoot',4);
+INSERT INTO kelimeler VALUES(1014,'haaat',5);
+
+-- H� BULUNAN KE�LMER� SORGULA
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, 'hi');
+-- i�erisinde herhangi bir yerde h veya i bulunanlar
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, '[hi]');
+
+-- i�inde ot veya et olanlar
+--veya | ile yap�l�r
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, 'ot|et');
+-- buyuk OT u g�stermedi yukardaki regex def olarak case senstv
+-- sonuna i koyarsan g�sterir insensitive olur
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, 'ot|et','i');
+
+-- hi veya ho ile ba�layan insentive
+-- ba�lama i�lemi i�in ^ kullan�l�r
+
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, '^hi|^ho','i');
+
+-- t veya m ile biten insentive
+-- biti� i�lemi i�in $ kullan�l�r
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, 't$|m$','i');
+-- h ba�la  t ile biten  3 harfli insentive
+-- - a dan z ye demek
+--[] veya demek a dan z ye veya 0 dan 9 a
+-- [] tek karakter ifade eder
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, 'h[a-z0-9]t','i');-- h[a]t 3 harfli hat
+
+-- h ba�layan t biten 2.harfi a veya i olan 3 harf
+
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, 'h[ai]t','i');
+
+-- i�inde m veya i veya e olan  kelimelerin t�m bilgilerini listeleyiniz
+
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, '[mie](*)');-- * s�zda �al���r
+--  i�inde  en az 2 o bar�nd�ran kelimerin t�m bilgileii
+--{2}ile yap�l�r
+SELECT*FROM kelimeler
+WHERE REGEXP_LIKE (kelime, ' [o]{2}','i');
+
+--------------------UPDATE--------------------
+----------------------------------------------
+
+CREATE TABLE tedarikciler(
+
+vergi_no NUMBER(3) PRIMARY KEY,
+firma_ismi VARCHAR2(50),
+irtibat_ismi VARCHAR2(50)
+);
+
+INSERT INTO tedarikciler VALUES(101,'IBM','Kim Yon');
+INSERT INTO tedarikciler VALUES(102,'HUAWEI','�in Li');
+INSERT INTO tedarikciler VALUES(103,'ER�KSON','Maki Tammamen');
+INSERT INTO tedarikciler VALUES(104,'APPLE','Adam Eve');
+
+CREATE TABLE urunnler(
+
+ted_vergino NUMBER(3) REFERENCES tedarikciler(vergi_no),
+urun_id VARCHAR2(11),
+urun_isim VARCHAR2(50),
+musteri_isim VARCHAR2(50)
+);
+INSERT INTO urunnler VALUES(101,1001, 'Laptop','Ayse Can');
+INSERT INTO urunnler VALUES(102,1002, 'Phone','Fatma Aka');
+INSERT INTO urunnler VALUES(102,1003, 'TV','Ramazan �z');
+INSERT INTO urunnler VALUES(102,1004, 'Laptop','Veli Han');
+INSERT INTO urunnler VALUES(103,1005, 'Phone','Canan Ak');
+INSERT INTO urunnler VALUES(104,1006, 'TV','Ali Bak');
+INSERT INTO urunnler VALUES(104,1007, 'Phone','Aslan Y�lmaz');
+
+SELECT * FROM tedarikciler;
+SELECT * FROM urunnler;
+
+--SYNTAX
+--UPDATE tabload�
+--SET sutunad� = yeni deger
+--WHERE SUTUNADI
+
+--VERG� NO 101 OLANI TED �SM� LG �RT�BAT 
+
+UPDATE tedarikciler
+SET firma_ismi = 'LG'
+WHERE vergi_no = 101;
+-- where yazmassak hepsini lg yapar
+
+SELECT * FROM tedarikciler;
+
+DELETE FROM tedarikciler;-- tablo de�il i�indekileri siler
+DROP TABLE tedarikciler;-- tabloyu siler
+
+--VERG� NO 102 OLANI TED �SM� samsung �RT�BAT �SM� AL� VEL� YAP 
+
+UPDATE tedarikciler
+SET firma_ismi = 'SAMSUNG', irtibat_ismi = 'Ali Veli'
+WHERE vergi_no = 102;
+
+SELECT * FROM tedarikciler;
+
+-- urunlerdekin phone telefon uap
+
+UPDATE urunnler
+SET urun_isim = 'telefon'
+WHERE urun_isim='Phone';
+
+--urunlerde urun �d 1004 den buytuk olanlar� 1 artt�r
+UPDATE urunnler
+SET urun_id = urun_id+1
+WHERE urun_id>1004;
+
+
+-- urunlerde tum urunler�n urun �d ile ted vergino sutun degeriyle topla g�ncelle
+UPDATE urunnler
+SET urun_id = urun_id + ted_vergino;
+
+-- urunlerde ali bak�n ald�g� urun ismini
+-- tedarik�i tablosundaki irtibat ismi adam eve olan firman�n ismi
+-- ile de�i�
+UPDATE urunnler
+SET urun_isim = (SELECT firma_ismi FROM tedarikciler 
+                WHERE irtibat_ismi = 'Adam Eve')
+WHERE musteri_isim = 'Ali Bak';
+
+-- laptop sat�n alan m�sterilein ismini 
+-- apple irtibat ismi ile
+
+UPDATE urunnler
+SET musteri_isim = (SELECT irtibat_ismi FROM tedarikciler
+                    WHERE firma_ismi = 'Apple')
+WHERE urun_isim = 'Laptop';
+
+SELECT * FROM  tedarikciler;
+SELECT * FROM  urunnler;
+
+---------DELETE-------
+
+--DELETE FROM tablo af� tablonun t�m i�eri�ini siler tabloyu de�il--
+--bu komut bir dml komutu dolay�s�yla devam�nda where gibi c�mlecikler kullan�labilir
+
+-- DELETE  FROM tablo ad�
+--WHERE sutunad� = veri; �art oldugunda siler sutunu
+
+
+CREATE TABLE ogrencilerr
+(
+    id CHAR(3),
+    isim VARCHAR2(50),
+    veli_isim VARCHAR2(50),
+    yazili_notu NUMBER(3)
+);
+
+INSERT INTO ogrencilerr VALUES(123,'Ali Can','Hasan',75);
+INSERT INTO ogrencilerr VALUES(124,'Merve G�l','Ay�e',85);
+INSERT INTO ogrencilerr VALUES(125,'Kemal Ya�a','Hasan',85);
+INSERT INTO ogrencilerr VALUES(126,'Nesibe Y�lmaz','Ay�e',95);
+INSERT INTO ogrencilerr VALUES(127,'Mustafa Bak','Can',99);
+
+SELECT * FROM ogrencilerr;
+DROP TABLE ogrencilerr;
+--id 124
+
+DELETE FROM ogrencilerr
+WHERE id=124;
+
+--ad� kemal ya�a
+
+DELETE FROM ogrencilerr
+where isim='Kemal Ya�a';
+
+--ad� nesibe y�lmaz mustafa bak
+
+DELETE FROM ogrencilerr
+WHERE  isim='Nesibe Y�lmaz' OR isim='Mustafa Bak';-- AND OLMAZ 12 DE�ER� AYNI YERDE ARAR BULKAMAZ
+
+DELETE FROM ogrencilerr
+where isim='Ali Can' AND id = 123;
+
+
+--idsi 126dan buyuk olanlar�
+
+DELETE FROM ogrencilerr
+WHERE id>126;
+--idsi123 125 126olanlar� sil
+
+DELETE FROM ogrencilerr
+WHERE id IN(123,125,126);
+
+-- her�eyi sil
+
+DELETE FROM ogrencilerr;
+
+-- tabloyu silmek i�in drop tablo ogrencilerr;siler ve veritaban�n�n ��p kutusuna yo�llar
+--ddl komutudur 
+--DROP TABLE ogrecilerr PURGE; ��OP KUTUSNA ATMADAN D�REK S�LER
+--recycle bin veritaba� ��p kutusunDAN GER� ALMA
+--FLASHBACK TABLE ogrenciler TO BEFORE DROP;
+
+--DELETE �LE S�L�NENLER� GER� GET�RME
+ROLLBACK;
+
+----TRUNCATE---
+--SE�MEL� S�LME YAPMAZ ��NK� DDL KOMUTU WHERE VS ALMAZ ROLLBACKLE GER� ALINAMAZ
+--T�M VER�Y� S�LER tabloyu silmez veriyi hassas siler ancak transaction ile geri al�n�r
+TRUNCATE TABLE ogrencilerr;
+
+
+CREATE TABLE talebeler (
+  id CHAR(3),
+  isim VARCHAR2(50),
+  veli_isim VARCHAR2(50),
+  yazili_notu NUMBER(3),
+  CONSTRAINT talebe_pk PRIMARY KEY (id)
+);
+
+INSERT INTO talebeler VALUES(123,'Ali Can','Hasan',75);
+INSERT INTO talebeler VALUES(124,'Merve G�l','Ay�e',85);
+INSERT INTO talebeler VALUES(125,'Kemal Ya�a','Hasan',85);
+INSERT INTO talebeler VALUES(126,'Nesibe Y�lmaz','Ay�e',95);
+INSERT INTO talebeler VALUES(127,'Mustafa Bak','Can',99);
+
+
+
+CREATE TABLE notlar (
+  talebe_id CHAR(3),
+  ders_adi VARCHAR2(50),
+  yazili_notu NUMBER(3),
+  CONSTRAINT notlar_pk FOREIGN KEY (talebe_id)
+  REFERENCES talebeler(id) ON DELETE CASCADE--bu kod child silinmeden direk parenntea ve cildda ili�kisi olan hepsini siler 
+);
+
+INSERT INTO notlar VALUES(123,'kimya',75);
+INSERT INTO notlar VALUES(124,'fizik',65);
+INSERT INTO notlar VALUES(124,'fizik',75);
+INSERT INTO notlar VALUES(125,'tarih',90);
+INSERT INTO notlar VALUES(126,'matematik',90);
+
+DELETE FROM talebeler
+WHERE id=124;-- ili�kili oldugu i�in �nce cgild silinmeli
+
+
+DELETE FROM notlar
+WHERE talebe_id=124;
+DELETE FROM talebeler
+WHERE id=124; -- �imdi olur �nce child silinir sonra parent g�venlil i�in
+--ON DELETE CASCADE--bu kod child silinmeden direk parenntea ve cildda ili�kisi olan hepsini siler
+-- fore�gn keydeki referanc sat�r�na yaz�l�r fore�gn keyden sorna yaz�l� 
+--parenttdaki� silinen bir kay�t ile ili�kili olan t�m child kay�tlar�n� siler
+SELECT * FROM talebeler;
+SELECT * FROM notlar;
+--her defas�nda �nce child tablodaki verileri silmek yerine 
+-- ON DELETE CASCADE silme �zelli�ini aktif hale getirebiliriz
+--bunun i�in fk olan sat�r�n en sonuna yazar�z
+
+-- SUBQUERIES--
+-- SORGU ���NDE �ALI�AN SOGUYA DEN�R ALT SORGU ANLAMINDADIR
+
+
+
+CREATE TABLE personell (
+  id NUMBER(9),
+  isim VARCHAR2(50),
+  sehir VARCHAR2(50),
+  maas NUMBER(20),
+  sirket VARCHAR2(20)
+);
+
+INSERT INTO personell VALUES(123456789,'Ali Seker','�stanbul',2500,'Honda');
+INSERT INTO personell VALUES(234567890,'Ay�e G�l','�stanbul',1500,'Toyota');
+INSERT INTO personell VALUES(345678901,'Veli Y�lmaz','Ankara',3000,'Honda');
+INSERT INTO personell VALUES(456789012,'Veli Y�lmaz','�zmir',1000,'Ford');
+INSERT INTO personell VALUES(567890123,'Veli Y�lmaz','Ankara',7000,'Hyundai');
+INSERT INTO personell VALUES(456789012,'Ay�e G�l','Ankara',1500,'Ford');
+INSERT INTO personell VALUES(123456710,'Fatma Ya�a','Bursa',2500,'Honda');
+
+CREATE TABLE sirketler (
+  sirket_id NUMBER(9),
+  sirket_adi VARCHAR2(20),
+  personel_sayisi NUMBER(20)
+  
+);
+
+INSERT INTO sirketler VALUES(100,'Honda',12000);
+INSERT INTO sirketler VALUES(101,'Ford',18000);
+INSERT INTO sirketler VALUES(102,'Hyundai',10000);
+INSERT INTO sirketler VALUES(103,'Toyota',21000);
+
+SELECT *FROM personell;
+SELECT *FROM sirketler;
+
+--  personel say�s� 15000 den �ok olan �irketlerin isimleini ve bu
+-- �irkette �al��an personelin isim lerinilisteleyin
+-- istenen verilker ayn� tabloda de�il
+
+SELECT isim,sirket FROM personell
+WHERE sirket IN (SELECT sirket_adi FROM sirketler
+                  WHERE personel_sayisi >15000);
+-- ikinci sorgudan gelen isimleri where ile ald�
+
+-- sirket id 101 den buyuk olan �irket �al��anlar�n�n isim maa� �ehir
+
+SELECT isim,maas,sehir FROM personell
+WHERE sirket IN(SELECT sirket_adi FROM sirketler
+                  WHERE sirket_id >101);
+
+
+-- ankarada personeli olan �irketlerin id lerini ve personel say�lar�n� listele
+
+SELECT sirket_id,personel_sayisi FROM sirketler
+WHERE sirket_adi IN(SELECT sirket FROM personell
+                  WHERE sehir='Ankara');
+
+
+-- her �irketin ismini personel say�s�n�u ve o �irketteki toplam maa��n� listele
+-- aggregate metodu(SUM COUNT MIN MAX AVG) subquery i�inde kullan�labilir
+--ancak sorgu tek bir de�er d�nd�r�yor olmal�d�r
+
+SELECT sirket_adi,personel_sayisi,(SELECT SUM(maas) FROM personell
+                                    WHERE sirketler.sirket_adi = sirket)AS toplam_maas -- sutundaki ismini de�i�tik
+                                    
+FROM sirketler;
+
+-- her �irketin ismini personel say�s�n� o �irketteki personelin 
+--ortalama maa��n� listeleyin
+SELECT sirket_adi,personel_sayisi,(SELECT  ROUND(AVG(maas)) FROM personell
+                                    WHERE sirketler.sirket_adi = sirket)AS ort_maas -- sutundaki ismini de�i�tik
+                                    --ROUND YUVARLAR
+FROM sirketler;
+
+--her �irketin ismini personel say�s�n� o �irketteki personelin 
+--MAX M�N maa��n� listeleyin
+
+SELECT sirket_adi,personel_sayisi,(SELECT  MAX(maas) FROM personell
+                                    WHERE sirket_adi = sirket)AS max_maas, -- sutundaki ismini de�i�tik
+                                   (SELECT MIN(maas) FROM personell
+                                   WHERE sirket_adi=sirket)AS min_maas
+FROM sirketler;
+
+-- her �irketin idsini ismini ve toplam ka� �ehirde bulundugunu listele
+SELECT sirket_id,sirket_adi,(SELECT COUNT(sehir)FROM personell
+                                WHERE sirket=sirketler.sirket_adi)AS sehir_sayisi
+
+
+FROM sirketler;
+
+-- EX�STS NOT EX�ST
+--EX�STS BOOELEN OPERAT�R�D�R  TRUE FALSE D�NER
+-- SUBQUERY LERDE SATIRLARIN DO�RULUGUNU TEST ���N KULLANILIR
+--EGER B�R SUBQUERY B�R SATIRI D�ND�R�RSE EX�ST TRUE AKS� TAKD�RD FALSE D�NER
+-- SUBQUERYLERDE HIZLI KONTROL ��LEM�� ���N KULLANILIR
+CREATE TABLE mart_satislar
+(
+    urun_id NUMBER(10),
+    musteri_isim VARCHAR2(50),
+    urun_isim VARCHAR2(50)
+);
+
+CREATE TABLE nisan_satislar
+(
+    urun_id NUMBER(10),
+    musteri_isim VARCHAR2(50),
+    urun_isim VARCHAR2(50)
+);
+
+INSERT INTO mart_satislar VALUES (10,'Mark','Honda');
+INSERT INTO mart_satislar VALUES (10,'Mark','Honda');
+INSERT INTO mart_satislar VALUES (20,'John','Toyota');
+INSERT INTO mart_satislar VALUES (30,'Amy','Ford');
+INSERT INTO mart_satislar VALUES (20,'Mark','Toyota');
+INSERT INTO mart_satislar VALUES (10,'Adem','Honda');
+INSERT INTO mart_satislar VALUES (40,'John','Hyndai');
+INSERT INTO mart_satislar VALUES (20,'Eddie','Toyota');
+
+
+INSERT INTO nisan_satislar VALUES (10,'Hasan','Honda');
+INSERT INTO nisan_satislar VALUES (10,'Kemal','Honda');
+INSERT INTO nisan_satislar VALUES (20,'Ay�e','Toyota');
+INSERT INTO nisan_satislar VALUES (50,'Ya�ar','Volvo');
+INSERT INTO nisan_satislar VALUES (20,'Mine','Toyota');
+
+SELECT * FROM mart_satislar;
+SELECT * FROM nisan_satislar;
+
+-- mart ve nisan aytlar�nda ayn� urun �d ile sat�lan urunlerin 
+--urun id leini listeleyen ve ayn� zamnda bu urunleri mart ay�nda alan 
+--musteriisimlerini listele
+-- AS bir sutuna k�sa isim verir bir sorgu i�inde tabloyada k�sa isim veririz
+SELECT musteri_isim, urun_id FROM mart_satislar mart 
+WHERE EXISTS (SELECT urun_id FROM nisan_satislar nisan
+                WHERE mart.urun.id=nisan.urun_id)
+
+-- BU �EK�LDE DE OLUR AMA IN B�T�N VER�YE BAKAR EXIST BYLDUMU D�NER DAHA HIZLI EX�STS
+WHERE urun_id IN(SELECT urun_id FROM nisan_satislar
+                WHERE mart_satislar.urun.id=urun_id)
+                
+                
+-- her iki ayda da sat�lan �r�nlerin urun_isim lerini ve bu urunlerin
+--nisan ay�nda sat�n alan musteri isimlerini listele
+SELECT urun_isim, musteri_isim FROM nisan_satislar nisan
+WHERE EXISTS (SELECT urun_id FROM mart_satislar mart
+                WHERE mart.isim.id=nisan.urun_isim);
+
+--her iki ayda da ortak olarak sat�lmayan urunler�n urun_�sim lerini
+--ve bu urunleri nisan ay�nda sat�n alan musteri isimelrini
+SELECT urun_isim, musteri_isim FROM nisan_satislar nisan
+WHERE NOT EXISTS (SELECT urun_id FROM mart_satislar mart
+                WHERE mart.urun.id=nisan.urun_id);       
+                
+--IS NULL, IS NOT NULL  boolean operatorleridir bir tanesinin null olup olmad�g�n� komtrol eder
+-- COALESCE ise bir fonksiyodnur ver i�indeki parametrelerden NULL olmayan
+-- ilk ifadeyyyi d�nd�r�r e�er ald�g� t�m ifadeler NULL ise NULL d�nd�r�r
+--COALESCE(ifade1,ifade2,ifade3..ifaden)
+            
+CREATE TABLE insanlar
+(
+    ssn CHAR(9),
+    isim VARCHAR2(50),
+    adres VARCHAR2(50)
+);
+                
+INSERT INTO insanlar VALUES('123456789','Ali Can','Istanbul');                
+INSERT INTO insanlar VALUES('234567890','Veli Can','Ankara');  
+INSERT INTO insanlar VALUES('345678901','Mine Bulut','Izmir');  
+INSERT INTO insanlar(ssn, adres) VALUES('456789012','Bursa');  
+INSERT INTO insanlar(ssn, adres) VALUES('567890123','Denizli');  
+INSERT INTO insanlar(adres) VALUES('Sakarya');  
+INSERT INTO insanlar(ssn) VALUES('999111222');  
+DELETE FROM insanlar;
+-- isim i null olanlar� listele                          
+SELECT * FROM insanlar
+WHERE isim IS NULL;
+-- �S�M � NULL OLMAYANLARI
+SELECT * FROM insanlar
+WHERE isim IS NOT NULL;   
+     
+-- null olan isimlere no name yaz           
+                
+UPDATE insanlar
+SET isim = 'no name'
+WHERE isim IS NULL;
+                
+--isimi null olanalra henuz isim girilmedi
+--adresi nul olanlara henuz adres girilmedi
+-- ssn nulkl olanalra henuz no ssn yaz�n
+--birden fazla g�nccelemecoalesce ilk null olmayan hangisiyse onun de�erini d�nd�r�r
+
+UPDATE insanlar
+SET isim = COALESCE (isim, 'henuz isim girilmedi'),
+adres = COALESCE (adres, 'henuz adres girilmedi'),
+ssn = COALESCE (ssn, 'no ssn');
+-- isim null ise t�rnak i�indekini atar null de�ilse direk isim yazar  
+
+
+
+-- ORDER BY c�mlecigi bir sorgu deyimi i�inde belli bir sutuna g�re s�ralma yapmak i�in 
+--kullan�l�r B��EY BEL�RTMESSEN NATUREL ORDERA G�RE 
+--ORDER BY sutunadi ASC    --ARTAN
+--ORDER BY sutunadi DESC    --AZALAN
+CREATE TABLE kisilerrr
+(
+    ssn CHAR(9), PRIMARY KEY
+    isim VARCHAR2(50),
+    soyisim VARCHAR2(50),
+    maas NUMBER,
+    adres VARCHAR2(50)
+);
+                
+INSERT INTO kisilerrr VALUES('123456789','Ali','Can',3000,'Istanbul');                
+INSERT INTO kisilerrr VALUES('234567890','Veli', 'Cem',2890,'Ankara');  
+INSERT INTO kisilerrr VALUES('345678901','Mine' ,'Bulut',4200,'Ankara');  
+INSERT INTO kisilerrr VALUES('256789012','Mahmut','Bulut',3150,'Istanbul');  
+INSERT INTO kisilerrr VALUES('344678901','Mine', 'Yasa',5000,'Denizli');  
+INSERT INTO kisilerrr VALUES('345458901','Veli','Y�lmaz',7000,'Istanbul');  
+             
+-- kisiler tablosunu adrese g�re s�raly�n
+SELECT * FROM kisilerrr
+ORDER BY adres;-- ASC OLARAK SIRALADI YAN� DOGAL SONUNA DSC YAZSAK TERS SIRALARDI
+
+
+
+-- ki�iler tablosunu maas a g�re s�ralam
+                
+SELECT * FROM kisilerrr
+ORDER BY maas;                
+ -- ki�iler tablosunu maas a g�re s�ralam azalan s�rala yan� ters               
+ SELECT * FROM kisilerrr
+ORDER BY maas DESC;   --AZALAN
+
+-- �SM� M�NE OLANALRI SSN E G�RE AZALAN SIRALA
+SELECT * FROM kisilerrr
+WHERE isim = 'Mine'
+ORDER BY ssn DESC; 
+-- order by varsa where den sonra gelir
+
+
+-- soyisimi bulut olanlar� isim s�ral�
+
+SELECT * FROM kisilerrr
+WHERE soyisim = 'Bulut'
+ORDER BY isim; 
+-- s�ralamy� isime g�re yap dedi�i i�in iism yazd�k
+-- isim yazmak yerine sutun rakam� da yazabilirz 
+--ss1 iism2 soyisim3 maas4 adres 5  yani oreer y dan sonra iis m yerine 2 de yaz�labilirdfi
+
+
+-- FETCH NEXT OFFSET
+-- FETCH C�MLEC�G� ile listelenecek kay�tlar� s�n�rland�r�rz.
+--istersek sat�r say�s�na g�re istersek toplam sat�r say�s�n�n belli bir 
+--y�zdesine g�re s�n�rland�ravbilriz
+-- FETCH NEXT 3 ROWS ONLY VEYA FETCH NETX SATIR Y�ZDES� PERCENT ROWS ONLY
+--OFFSET vc�mlecigi ile de listelenecek olan sat�rlar�n istedi�in kadar�nb� s�rayla atlyaB�LR�S�M
+-- OFFSET SATIR SAYISI ROWS
+
+-- maas� en yuksek 3 ki�inin bilgilerini listele
+SELECT * FROM kisilerrr
+ORDER BY maas DESC; 
+FETCH NEXT 3 ROWS ONLY; -- SIRADAK� 3 SATIRI GET�R DEMEK
+
+
+-- maas� en DUSUK 2 ki�inin bilgilerini listele
+
+SELECT * FROM kisilerrr
+ORDER BY maas ASC; 
+FETCH NEXT 2 ROWS ONLY;
+
+-- maas�SIRALAMDA 4. VE 6. K���KER�N B�LG�LER�N�  listele
+
+SELECT * FROM kisilerrr
+ORDER BY maas DESC; 
+OFFSET 3 ROWS -- �LK 3 U GEC
+FETCH NEXT 3 ROWS; -- KALAN 3 U AL
+
+-- GROUP BY--
+-- GROUP BY c�mleci�i bir select ifadesinde sat�lrar� sutunlar� de�erlerine
+--g�re �zet olarak grupland�rmak i�in kullan�l�r
+-- her grup ba��na bir sat�r d�ndr�r�
+-- group by genelde avg count max m�n ve sum gibi aggregate fonksiyonlarla kullan�l�r
+
+CREATE TABLE manav
+(
+    isim VARCHAR2(50),
+    urun_adi VARCHAR2(50),
+    urun_miktari NUMBER(9)
+    
+);
+                
+INSERT INTO manav VALUES('Ali','Elma',5);                
+INSERT INTO manav VALUES('Ayse', 'Armut',3);  
+INSERT INTO manav VALUES('Veli' ,'Elma',2);  
+INSERT INTO manav VALUES('Hasan','Uzum',4);  
+INSERT INTO manav VALUES('Ali', 'Armut',2);  
+INSERT INTO manav VALUES('Ayse','Elma',3);  
+INSERT INTO manav VALUES('Veli','Uzum',4);                
+INSERT INTO manav VALUES('Ali', 'Armut',2);  
+INSERT INTO manav VALUES('Veli' ,'Elma',3);  
+INSERT INTO manav VALUES('Ayse','Uzum',4);  
+INSERT INTO manav VALUES('Ali', '',2);  
+
+--kisi ismine g�re sat�lan toplam meyve 
+
+SELECT isim,SUM(urun_miktari) AS toplam_urun
+FROM manav
+GROUP BY isim;
+-- SATILAN MEYVE TURUNE G�RE (URUN_ ADI ) URUN ALAN K��� SAYISINI
+--G�STEREN SORUYU YAZ NULL OLARAK G�R�LEN MEYVEY� L�STELEME
+
+SELECT urun_adi,COUNT(isim) AS kisi_sayisi
+FROM manav
+WHERE urun_adi IS NOT NULL
+GROUP BY urun_adi;
+--bunu s�ralmak istersek 
+
+SELECT urun_adi,COUNT(isim) AS kisi_sayisi
+FROM manav
+WHERE urun_adi IS NOT NULL
+GROUP BY urun_adi
+ORDER BY COUNT(isim);
+-- dikkat et �nce where gelir order by kullanmak gerekirse en sona gelir
+
+--sat�lan meyve t�r�ne urun ad� ne  g�re sat�lan macx m�n miktarlar�n� 
+--max urun miktar�na g�re s�ralay�p listele
+
+SELECT urun_adi,MAX(urun_miktari)AS max_miktar, MIN(urun_miktari)AS min_miktar
+FROM manav
+WHERE urun_adi IS NOT NULL
+GROUP BY urun_adi
+ORDER BY MAX(urun_miktari);
+
+-- ki�i ismine ve urun ad�na g�re sat�lan urun toplam�n� grupland�ran ve 
+-- isme g�re ters s�ralayan sorgu yaz
+-- burda 2 grupland�rma var
+SELECT isim, urun_adi,SUM(urun_miktari) AS toplam_miktar
+FROM manav
+WHERE urun_adi IS NOT NULL
+GROUP BY isim, urun_adi
+ORDER BY isim DESC;
+
+-- kisi ismine ve urun ad�na g�re sat�lan urun toplam�n� bulan ve bu toplam
+--de�eri 3 den fazla olanlar� listele
+SELECT isim, urun_adi, SUM(urun_miktari) AS toplam_miktar
+FROM manav
+WHERE SUM(urun_miktari)>3
+GROUP BY isim, urun_adi;
+-- BU �EK�LDE HATA VER�R WHERE SATIRINDAN DOLAYI 
+-- E�ER KULLANACAGIMIZ KO�UL SUM VS G�B� FONBKS�YOMLRLA �LG�L�YSE
+-- ONU WHERE DE��L HAV�NG �LE YAPILIR GROUP BY DAN SONRA YAZILIR
+
+SELECT isim, urun_adi, SUM(urun_miktari) AS toplam_miktar
+FROM manav
+GROUP BY isim, urun_adi
+HAVING SUM(urun_miktari)>=3;
+-- AGGREGATE FONKS �LE �LG�L� B�R KO�UL KOYMAK ���N GROUP BY DAN SONRA HAVING KULLANILIR WHERE OLMAZ
+-- TERS SIRALA DESEYD�
+SELECT isim, urun_adi, SUM(urun_miktari) AS toplam_miktar
+FROM manav
+GROUP BY isim, urun_adi
+HAVING SUM(urun_miktari)>=3
+ORDER BY SUM(urun_miktari) DESC;
+-- ORDER BY HEP EN SONDADAIR
+
+-- SATILAN URUN ADINA G�RE MAX URUN SAYILARINI SIRALAYARAK L�STELYEN SORGU
+-- SADECE MAX URUN M�LKTARI MIN URUN M�KTARINA E��T OLMAYANLARI G�STERS�N
+SELECT urun_adi, MAX(urun_miktari)
+FROM manav
+GROUP BY urun_adi
+HAVING MAX(urun_miktari)<> MIN(urun_miktari)
+ORDER BY MAX(urun_miktari);
+
+-- DISTINC 
+-- bir sorguda benzer olan sat�rlar� filtrelemek i�in kullan�l�r dolay�s�yla
+-- se�ilen sutun yada sutunlar i�in benzersiz veri i�eren sat�r olu�turmaya yarar
+--syntax
+--SELECT DISTINCT sutunadi1, sutun adi2 sutun ad� 3 
+--from tablo ad�
+
+-- sat�lan farkl�m m�eyve t�rkerlinin say�s�n� listele
+
+SELECT COUNT(DISTINCT urun_adi)AS urun_sayisi 
+FROM manav;
+
+-- sat�lanm meyve ve isimlerin farkl� olanlr�n� listele
+
+SELECT DISTINCT urun_adi,isim 
+FROM manav;
+-- �K� STUNA BAKAR AYNI �SE ATAR VEL� ELMA DAN 2 TANE AL� ARMUTTAN 2 TANE VARI
+
+-- 2 SUTUN ���N BENZERL��� OLANLARI �IKARIYOR
+
+-- SATILAN MEYVELER�N URUN M�KYTARLARININ BENZERS�Z TOPLAMLARINI L�STELE
+SELECT SUM(DISTINCT urun_miktari) AS urun_sayisi
+FROM manav;
+
+-- SET OPERAT�RLER� UNION UNION ALL
+-- UNION UNION ALL INTERSECT VE MINUS gibi SET operatorleri yard�m�yla 
+--�oklu sorgular birle�tirilenbilir
+--UNION: Bir set operatorudur 2 veya daha fazla sorgu ifadesinin sonu� kumeler�n� birle�tirerek 
+--tek bir sonu� kumesi olu�rturure
+-- not: birle�ik olan sorgu ifadesinin  veri t�r� di�er sorguddaki ifadelerin 
+--vceri t�re�yle ayn� olmald�r
+--syntacx
+-- SELECT sutunad� sutunad�2  .. from tablo ad� 
+-- UNION
+-- SELECT sutunad� sutunad�2  .. from tablo ad� 
+--NOT UNION OPERATORU SADECE BENZERS�Z DE�ERLER ALIR BENZERL� VER�LER�
+--ALMAK ���N UNION ALL KULLANILIR
+
+CREATE TABLE sahsiyetler(
+     id NUMBER(9),
+     isim VARCHAR2(50),
+     sehir VARCHAR2(50),
+     maas NUMBER(20),
+     sirket VARCHAR2(20),
+     CONSTRAINT personel_pk PRIMARY KEY(id)
+
+
+);
+
+
+INSERT INTO sahsiyetler VALUES(123456789, 'aL� YILMAZ','Istanbul',5500,'honda');
+INSERT INTO sahsiyetler VALUES(234567890, 'veli �ahin','Istanbul',4500,'toyota');
+INSERT INTO sahsiyetler VALUES(345678901, 'mehmet �zt�rk','ankara',3500,'honda');
+INSERT INTO sahsiyetler VALUES(456789012, 'mehmet �zt�rk','Izmir',6000,'ford');
+INSERT INTO sahsiyetler VALUES(567890123, 'mehmet �zt�rk','ankara',7000,'tofas');
+INSERT INTO sahsiyetler VALUES(453445611, 'veli �ahin','ankara',4500,'ford');
+INSERT INTO sahsiyetler VALUES(123456710, 'hatice �ahin','bursa',4200,'honda');
+
+-- mas� 4000den cok olan isci isimlerini ve 5000 fazla maas� al�nan �ehirleri g�ster
+SELECT isim AS isim_veya_sehir, maas 
+FROM sahsiyetler
+WHERE maas>4000
+UNION
+SELECT sehir,maas FROM sahsiyetler
+WHERE maas>5000;
+
+--normalde toplam 9 veri var ama 7 g�sterdi un�on ayn�lar� att� veli sah�n 4500 att�
+-- un�on all desek veli sahinide al�r
+
+
+-- mehmet �zt�rk ismindekiki�ilerinm maas�lar�n� ve istanbuldaki personmein maaslar�n� 
+--�oktan aza s�ralayrak 1 tabloda 
+
+SELECT maas,isim AS isim_veya_sehir
+FROM sahsiyetler
+WHERE isim='mehmet �zt�rk'
+UNION
+SELECT maas, sehir
+FROM sahsiyetler
+WHERE sehir='�stanbul'
+ORDER BY maas DESC;
+
+-- KAR�ILIKLI SIRAYA G�RE B�RLE�T�R�R NUMBERLA NUMBER CHARLA CHAR 977 DE �S�M MAAS YER� DE����RSE HATA VER�R
+
+CREATE TABLE personel_bilgi(
+     id NUMBER(9),
+     tel CHAR(10) UNIQUE,
+     cocuk_sayisi NUMBER(2),
+     CONSTRAINT fk_personel FOREIGN KEY(id) REFERENCES sahsiyetler(id)
+);
+
+INSERT INTO personel_bilgi VALUES(123456789,'5302345678',5);
+INSERT INTO personel_bilgi VALUES(234567890,'5422345678',4);
+INSERT INTO personel_bilgi VALUES(345678901,'5354561245',3);
+INSERT INTO personel_bilgi VALUES(456789012,'5411452659',3);
+INSERT INTO personel_bilgi VALUES(567890123,'5551253698',2);
+INSERT INTO personel_bilgi VALUES(453445611,'5524578574',2);
+INSERT INTO personel_bilgi VALUES(123456710,'5537488585',1);
+
+-- �D S� 123456789 OLAN PERSONMEL�N PERSONEL TABLOSUNDAN SEH�R
+-- VE MAASINI PERSONEL B�LG� TABLOSUNDAN DA TEL VE COCUK SAYISINI YAZDIR
+-- S�YLE YAPACAGIZ AYNI T�RDE OLANLARI B�RLE�T�R YAN�
+-- MAAS�LA COCUK SAYISI TEL �LE SEH�R�
+-- EGER SUTUN B�RLE�T�RME YAPIYORSAK SET OPERTORU B�RDEN FAZLA TABLONUN SUTUNLERI B�RLE�T�RMA
+-- TABLO B�RLE�T�RME YAPIYIORSAK JOIN ��LEMLER� KULLANILIR SONRA G�RECE��Z D�REK 1 DEN FAZLA TABLOYU B�RLE�T�REM
+
+
+SELECT sehir AS sehir_tel, maas AS maas_cocukSayisi
+FROM sahsiyetler
+WHERE id=123456789
+UNION
+SELECT tel, cocuk_sayisi
+FROM personel_bilgi
+WHERE id=123456789;
+DROP TABLE ogrenciler;
+
+-- INTERSECT
+-- 2 VEYA DAHA FAZLA SORGU �FADES�N�N SONU�LARINI D�ND�RMEK ���N KULLANILIR
+--ANCAK intersect sadece sorugular�n ortak verileini ke�isimlerini d�nd�r�r
+--syntax
+--SELECT sutunad� sutunad�2  .. from tablo ad� 
+-- INTERSECT
+-- SELECT sutunad� sutunad�2  .. from tablo ad�
+
+-- PERSONEL TABL IST VEYA ANKARADA CALISAMLARIN ID LER�N� SORGULA
+-- PERS B�LG� TABLOSUNDAN 2 VEYTA 3 COCUGU OLANLARIN �DLER�N�
+--SORGULKA �NTERSECT �LE B�RLE�T�
+  
+SELECT id FROM sahsiyetler
+WHERE sehir IN('Istanbul','Ankara')
+INTERSECT  
+SELECT id FROM personel_bilgi
+WHERE cocuk_sayisi IN(2,3) ;
+  
+-- HONDA FORD TOFASTA CALISAN ORTAK PERSONEL
+
+SELECT isim
+FROM sahsiyetler
+WHERE sirket='Honda'
+INTERSECT  
+SELECT isim
+FROM sahsiyetler
+WHERE sirket='Ford'  
+INTERSECT   
+SELECT isim
+FROM sahsiyetler
+WHERE sirket='tofas' ; 
+  
+-- MINUS 
+--1.SORGU �LE2.SORGU ARASINDAK� FARKLI OLANLARI D�ND�R�R
+--SELECT sutunad� sutunad�2  .. from tablo ad� 
+-- MINUS
+-- SELECT sutunad� sutunad�2  .. from tablo ad�
+  
+-- 5000DEN AZ MAAS ALAN VE HONDA CALISANI OLMAYANLARIN B�LG�LER�               
+--1.YONTEM MAASI 5000DEN AZ OLANLAR S�RKET� HONDA OLMAYANLARIN ORTAK OLANLARI
+SELECT isim,maas,sirket
+FROM sahsiyetler
+WHERE maas<5000
+INTERSECT 
+SELECT isim,maas,sirket
+FROM sahsiyetler
+WHERE sirket !='honda';
+--2.YONTEM MAASI 5000DEN AZ OLANLAR IN HONDA CALI�ANI OLANLARDAN FARKI
+SELECT isim,maas,sirket
+FROM sahsiyetler
+WHERE maas<5000
+MINUS 
+SELECT isim,maas,sirket
+FROM sahsiyetler
+WHERE sirket ='honda';
+
+-- �SM� MEHMET �ZT�RK OLUP �STANBULDA �ALI�MAYANLARIN �S�MLE�N� VE SEH�RLER�N�
+
+
+SELECT isim,sehir FROM personel 
+WHERE isim ='mehmet �zt�rk'
+MINUS-- sehri istanbukldan farkl� olan mehmet �zt�rkelri
+SELECT isim,sehir FROM personel 
+WHERE sehir ='ISTANBUL'
+
+-- minus da un�on gibi tekrarl� sat�rlardan sadece 1 tanesini listeler
+-- mesela 2 tane ali ankara var birini almaz sat�r�n ayn�ysa benzer dmeektir 
+--sadece un�on all al�r di�erleri almaz
+
+-------JOINS------
+-- SET operat�rleri(un�on �ntersect m�nus) farkl� tablolardaki sutunlar�
+--birle�tirmek i�in kullan�l�r
+--JOIN islemleri ise farkl� tablolar� birle�tirmek i�in kullan�l�r
+--di�er bir ifadeyle farkl� tablolardaki se�ilen sutunlar ile yeni bir tablo olu�turur
+-- jo�n i�lenmleri ili�kisel veritabalar�mi�in �ok �nemli bir �zelliktir
+--��nk� for�gn keyler ile ili�kili olan tablolardan istenilen sutunlar� �ekmek
+--i�in kullan�labilir
+-- oracle sql de 4 �e�it jo�n i�lemi kullan�labilmektedir
+--1) FULL JOINi: tablodaki t�m sonu�lar� g�sterir
+--2) INNER JOIN: tablolardaki ortak olan sonu� kumesini g�sterir
+--3) LEFT JOIN: �LK TABLODA (SOL) OLUP  di�erinde olmayan sonu�lar� g�sterir
+--4) RIGHT JOIN: sadece ikinci tabloda olan sonu�lar� �sterir
+-- �L��K�L� TABLOLARDA HER TABLODAN FARKLI SUTUNLARI ALIP YEN� TABLO ���N JOINLER KULLANILIR
+-- jo�nde tablolar�n sutunlar�n� al�p yeni tablo yap�l�r
+--sette tablolar�n sutunlar�n� birle�tiip yeni tablo
+CREATE TABLE sirketlerrr
+(
+    sirket_id NUMBER(9),
+    sirket_isim VARCHAR2(20)
+);
+
+INSERT INTO sirketlerrr VALUES(100,'tOYOTA');
+INSERT INTO sirketlerrr VALUES(101,'honda');
+INSERT INTO sirketlerrr VALUES(102,'ford');
+INSERT INTO sirketlerrr VALUES(103,'hyndai');
+
+CREATE TABLE siparislerrr
+(
+    sirparis_id NUMBER(9),
+    sirket_id NUMBER(9)
+    siparis_tarihi DATE
+);
+
+INSERT INTO siparislerrr VALUES(11,101,'17-Apr-2020');
+INSERT INTO siparislerrr VALUES(22,102,'18-Apr-2020');
+INSERT INTO siparislerrr VALUES(33,103,'19-Apr-2020');
+INSERT INTO siparislerrr VALUES(44,104,'20-Apr-2020');
+INSERT INTO siparislerrr VALUES(55,105,'21-Apr-2020');
+
+DROP TABLE ogrenci_tablosu;
+
+/*============================== JOIN �SLEMLER� ===============================
+    
+    Set Operatorleri (Union,Intersect,Minus) farkl� tablolardaki sutunlari 
+    birlestirmek kullanilir.
+    
+    Join islemleri ise farkl� Tablolari birlestirmek icin kullanilir. Diger 
+    bir ifade ile farkli tablolardaki secilen sutunlar ile yeni bir tablo 
+    olusturmak icin kullanilabilir.
+    
+    JOIN islemleri Iliskisel Veritabanlari icin cok onemli bir ozelliktir. �unku
+    Foreign Key'ler ile iliskili olan tablolardan istenilen sutunlari cekmek 
+    icin JOIN islemleri kullanilabilir.
+    
+    ORACLE SQL'de 4 Cesit Join isemi kullanilabilmektedir.
+    1) FULL JOIN:  Tablodaki tum sonuclari gosterir
+    2) INNER JOIN:  Tablolardaki ortak olan sonuc kumesini gosterir
+    3) LEFT JOIN:  Ilk tabloda (Sol) olup digerinde olmayan sonuclari gosterir
+    4) RIGHT JOIN: Sadece Ikinci tabloda olan tum sonuclari gosterir
+   
+==============================================================================*/   
+    CREATE TABLE sirketler 
+    (
+        sirket_id NUMBER(9), 
+        sirket_isim VARCHAR2(20)
+    );
+    
+    INSERT INTO sirketler VALUES(100, 'Toyota');
+    INSERT INTO sirketler VALUES(101, 'Honda');
+    INSERT INTO sirketler VALUES(102, 'Ford');
+    INSERT INTO sirketler VALUES(103, 'Hyundai');
+    
+    CREATE TABLE siparisler
+    (
+        siparis_id NUMBER(9),
+        sirket_id NUMBER(9), 
+        siparis_tarihi DATE
+    );
+    
+    INSERT INTO siparisler VALUES(11, 101, '17-Apr-2020');
+    INSERT INTO siparisler VALUES(22, 102, '18-Apr-2020');
+    INSERT INTO siparisler VALUES(33, 103, '19-Apr-2020');
+    INSERT INTO siparisler VALUES(44, 104, '20-Apr-2020');
+    INSERT INTO siparisler VALUES(55, 105, '21-Apr-2020');
+
+    SELECT * FROM siparisler;
+    SELECT * FROM sirketler;
+    
+      
+/*=============================== FULL JOIN  ==================================
+    
+    FULL JOIN, Her iki tablo icin secilen sutunlara ait olan tum satirlari 
+    getirmek icin kullanilir. 
+    
+    Syntax
+    -----------
+    SELECT sutun1,sutun2....sutunN
+    FROM tablo1 
+    FULL JOIN tablo2
+    ON tablo1.sutun = tablo2.sutun;
+
+==============================================================================*/   
+   
+/* -----------------------------------------------------------------------------
+  ORNEK1: sirketler ve siparisler ad�ndaki tablolarda yer alan sirket_isim, 
+  siparis_id ve siparis_tarihleri listeleyen bir sorgu yaziniz.
+------------------------------------------------------------------------------*/ 
+    
+    SELECT s.sirket_isim, sp.siparis_id, sp.siparis_tarihi, sp.sirket_id
+    FROM sirketler s
+    FULL JOIN siparisler sp
+    ON s.sirket_id = sp.sirket_id;
+    
+    -- FULL Join'de iki tabloda var olan tum satirlar gosterilir.
+    -- Bir olupda digerlerine olmayan alanlar bo birakildi.
+    -- Join isleminde genelde iki tablodaki ortak olarak bulunan sutun, ON 
+    -- cumleciginde kosul yapisi kullanilir.
+    
+    
+      
+ /*=============================== INNER JOIN  ==================================
+    
+    Iki tablonun kesisim kumesi ile yeni bir tablo olusturmak icin kullanilir.
+    
+    Syntax
+    -----------
+    SELECT sutun1,sutun2....sutunN
+    FROM tablo1 
+    INNER JOIN tablo2
+    ON tablo1.sutun = tablo2.sutun;
+
+================================================================================  
+    
+  
+/* -----------------------------------------------------------------------------
+  ORNEK2: Iki Tabloda sirket_id�si ayni olanlarin sirket_ismi, siparis_id ve 
+  siparis_tarihleri listeleyen bir sorgu yaziniz.
+------------------------------------------------------------------------------*/  
+    
+    SELECT s.sirket_isim, sp.siparis_id, sp.siparis_tarihi, sp.sirket_id
+    FROM sirketler s
+    INNER JOIN siparisler sp
+    ON s.sirket_id = sp.sirket_id;
+    
+    -- INNER JOIN ile sadece iki tabloki ortak olan satilar secilir.
+    -- Diger ifadeyle iki tablodaki ortak olan sirket_id degerleri icin ilgili 
+    -- sutunlar listenir.
+    
+    -- INNER anahtar kelimesi opsiyoneldir.
+    
+        
+/*=============================== LEFT JOIN  ==================================
+    
+    LEFT JOIN, 1. tablodan (sol tablo) SELECT ile ifade edilen sutunlara ait tum
+    satirlari getirir. 
+    Ancak, diger tablodan sadece ON ile belirtilen kosula uyan satirlari getirir. 
+        
+    Syntax
+    -----------
+    SELECT sutun1,sutun2....sutunN
+    FROM tablo1 
+    LEFT JOIN tablo2
+    ON tablo1.sutun = tablo2.sutun;
+
+==============================================================================*/  
+            
+/* -----------------------------------------------------------------------------
+  ORNEK3: sirketler tablosundaki tum sirketleri ve bu sirketlere ait olan 
+  siparis_id ve siparis_tarihleri listeleyen bir sorgu yaziniz.
+------------------------------------------------------------------------------*/   
+    
+    SELECT s.sirket_isim, sp.siparis_id, sp.siparis_tarihi, sp.sirket_id, s.sirket_id
+    FROM sirketler s
+    LEFT JOIN siparisler sp
+    ON s.sirket_id = sp.sirket_id;
+    
+    -- Left Join�de ilk tablodaki tum satirlar gosterilir.
+    -- Ilk tablodaki satirlara 2.tablodan kosula uyan ortak satirlar gosterilir
+    -- ancak ortak olmayan kisimlar bos kalir
+          
+/*=============================== RIGHT JOIN  ==================================
+    
+    RIGHT JOIN, 2. tablodan (sag tablo) SELECT ile ifade edilen sutunlara ait tum
+    satirlari getirir. 
+    Ancak, diger tablodan sadece ON ile belirtilen kosula uyan satirlari getirir. 
+        
+    Syntax
+    -----------
+    SELECT sutun1,sutun2....sutunN
+    FROM tablo1 
+    RIGHT JOIN tablo2
+    ON tablo1.sutun = tablo2.sutun;
+
+==============================================================================*/   
+      
+/* -----------------------------------------------------------------------------
+  ORNEK4: siparisler tablosundaki tum siparis_id ve siparis_tarihleri ile 
+  bunlara kar��l�k gelen sirket_isimlerini listeleyen bir sorgu yaziniz.
+------------------------------------------------------------------------------*/   
+     
+    SELECT s.sirket_isim, sp.siparis_id, sp.siparis_tarihi, sp.sirket_id
+    FROM sirketler s
+    RIGHT JOIN siparisler sp
+    ON s.sirket_id = sp.sirket_id;
+    
+    -- Right Join�de 2. tablodaki tum satirlar gosterilir.
+    -- 2 tablodaki satirlara 1.tablodan kosula uyan ortak satirlar gosterilir
+    -- ancak ortak olmayan kisimlar bos kalirir.
+
+/*=============================== ALTER TABLE ==================================
+    
+    ALTER TABLE  tabloda ADD, MODIFY, veya DROP/DELETE COLUMNS islemleri icin 
+    kullanilir.
+    
+    ALTER TABLE ifadesi tablolari yeniden isimlendirmek (RENAME) icin de
+    kullanilir.
+   
+==============================================================================*/
+
+    CREATE TABLE personel 
+    (
+        id NUMBER(9), 
+        isim VARCHAR2(50), 
+        sehir VARCHAR2(50), 
+        maas NUMBER(20), 
+        sirket VARCHAR2(20),
+        CONSTRAINT personel_pk PRIMARY KEY (id)
+    );
+
+
+    INSERT INTO personel VALUES(123456789, 'Ali Yilmaz', 'Istanbul', 5500, 'Honda');
+    INSERT INTO personel VALUES(234567890, 'Veli Sahin', 'Istanbul', 4500, 'Toyota');
+    INSERT INTO personel VALUES(345678901, 'Mehmet Ozturk', 'Ankara', 3500, 'Honda'); 
+    INSERT INTO personel VALUES(456789012, 'Mehmet Ozturk', 'Izmir', 6000, 'Ford');
+    INSERT INTO personel VALUES(567890123, 'Mehmet Ozturk', 'Ankara', 7000, 'Tofas');
+    INSERT INTO personel VALUES(456715012, 'Veli Sahin', 'Ankara', 4500, 'Ford');
+  
+    
+      
+/* -----------------------------------------------------------------------------
+  ORNEK1: personel tablosuna ulke_isim adinda ve default degeri 'Turkiye' olan 
+  yeni bir sutun ekleyiniz.
+------------------------------------------------------------------------------*/ 
+    
+    ALTER TABLE personel
+    ADD ulke_isim VARCHAR2(20) DEFAULT 'TURKIYE';
+    
+    select * from personel;
+    
+      
+/* -----------------------------------------------------------------------------
+  ORNEK2: personel tablosuna cinsiyet Varchar2(20) ve yas Number(3) seklinde 
+  yeni sutunlar ekleyiniz.
+------------------------------------------------------------------------------*/  
+    ALTER TABLE personel
+    ADD (cinsiyet VARCHAR2(20), yas NUMBER(3));
+    
+/* -----------------------------------------------------------------------------
+  ORNEK3: personel tablosundan yas sutununu siliniz. 
+------------------------------------------------------------------------------*/ 
+
+    ALTER TABLE personel
+    DROP COLUMN yas;
+    
+/* -----------------------------------------------------------------------------
+  ORNEK4: personel tablosundaki ulke_isim sutununun adini ulke_adi olarak 
+  degistiriniz. 
+------------------------------------------------------------------------------*/  
+    ALTER TABLE personel
+    RENAME COLUMN ulke_isim TO ulke_adi;
+    
+   
+/* -----------------------------------------------------------------------------
+  ORNEK5: personel tablosunun adini isciler olarak degistiriniz. 
+------------------------------------------------------------------------------*/  
+    ALTER TABLE personel
+    RENAME TO isciler;
+  
+    select * from isciler;
+    
+/* -----------------------------------------------------------------------------
+  ORNEK6: isciler tablosundaki ulke_adi sutununa NOT NULL kisitlamasi ekleyiniz. 
+------------------------------------------------------------------------------*/ 
+    ALTER TABLE isciler
+    MODIFY ulke_adi VARCHAR2(30) NOT NULL; -- Hme veri tipini degistirik hem de 
+                                           -- NOT NULL kisitlamasi ekledik.
+    
+    ALTER TABLE isciler
+    MODIFY isim CHAR(100) ;     -- Veritipini CHAR(100) olarak degistirdik.
+    
+    ALTER TABLE isciler
+    MODIFY maas CHECK (maas >= 3500);   -- Maas alt limit kisitlamasi atadik.
+   
+    INSERT INTO isciler VALUES(123452310, 'Hatice Sahin', 'Bursa', 3000,'Almanya', 'Kad�n'); -- maas 3500 den az olamaz
+
+
+/* -----------------------------------------------------------------------------
+  M�N� PROJE 
+------------------------------------------------------------------------------*/ 
+
+
+CREATE TABLE bolumler (
+      bolum_id   NUMBER(2) CONSTRAINT bolum_pk PRIMARY KEY,
+      bolum_isim VARCHAR2(14),
+      konum      VARCHAR2(13)
+    );
+    
+    INSERT INTO bolumler VALUES (10,'MUHASABE','IST');
+    INSERT INTO bolumler VALUES (20,'MUDURLUK','ANKARA');
+    INSERT INTO bolumler VALUES (30,'SATIS','IZMIR');
+    INSERT INTO bolumler VALUES (40,'ISLETME','BURSA');
+    INSERT INTO bolumler VALUES (50,'DEPO', 'YOZGAT');
+?
+    CREATE TABLE personel (
+      personel_id   NUMBER(4) CONSTRAINT personel_pk PRIMARY KEY,
+      personel_isim VARCHAR2(10),
+      meslek        VARCHAR2(9),
+      mudur_id      NUMBER(4),
+      ise_baslama   DATE,
+      maas          NUMBER(7,2),
+      bolum_id      NUMBER(2) 
+    );
+    
+   SELECT * FROM bolumler;
+  
+    INSERT INTO personel VALUES (7369,'AHMET','KATIP',7902,'17-12-1980',800,20);
+    INSERT INTO personel VALUES (7499,'BAHATTIN','SATIS',7698,'20-2-1981',1600,30);
+    INSERT INTO personel VALUES (7521,'NESE','SATIS',7698,'22-2-1981',1250,30);
+    INSERT INTO personel VALUES (7566,'MUZAFFER','MUDUR',7839,'2-4-1981',2975,20);
+    INSERT INTO personel VALUES (7654,'MUHAMMET','SATIS',7698,'28-9-1981',1250,30);
+    INSERT INTO personel VALUES (7698,'EMINE','MUDUR',7839,'1-5-1981',2850,30);
+    INSERT INTO personel VALUES (7782,'HARUN','MUDUR',7839,'9-6-1981', 2450,10);
+    INSERT INTO personel VALUES (7788,'MESUT','ANALIST',7566,'13-07-87',3000,20);
+    INSERT INTO personel VALUES (7839,'SEHER','BASKAN',NULL,'17-11-1981',5000,10);
+    INSERT INTO personel VALUES (7844,'DUYGU','SATIS',7698,'8-9-1981',1500,30);
+    INSERT INTO personel VALUES (7876,'ALI','KATIP',7788,'13-07-87',1100,20);
+    INSERT INTO personel VALUES (7900,'MERVE','KATIP',7698,'3-12-1981',950,30);
+    INSERT INTO personel VALUES (7902,'NAZLI','ANALIST',7566,'3-12-1981',3000,20);
+    INSERT INTO personel VALUES (7934,'EBRU','KATIP',7782,'23-1-1982',1300,10);
+    INSERT INTO personel VALUES (7956,'SIBEL','MIMAR',7782,'29-1-1991',3300,60);
+    INSERT INTO personel VALUES (7933,'ZEKI','MUHENDIS',7782,'26-1-1987',4300,60);
+     
+    SELECT * FROM personel;
+SELECT personel_isim, maas FROM personel WHERE personel_id=7369;
+commit;
+ /* -----------------------------------------------------------------------------
+  ORNEK1: SATIS ve MUHASABE bolumlerinde calisan personelin isimlerini ve 
+  bolumlerini, once bolum sonra isim s�ral� olarak listeleyiniz
+------------------------------------------------------------------------------*/ 
+
+	SELECT P.personel_isim, B.bolum_isim 
+	FROM bolumler B 
+	JOIN personel P 
+	ON B.bolum_id = P.bolum_id
+	WHERE B.bolum_id IN(10,30)
+	ORDER BY B.bolum_isim, p.personel_isim;
+
+  
+/* -----------------------------------------------------------------------------
+  ORNEK2: SATIS,ISLETME ve DEPO bolumlerinde calisan personelin isimlerini,  
+  bolumlerini ve ise_baslama tarihlerini isim s�ral� olarak listeleyiniz. 
+  NOT: calisani olmasa bile bolum ismi gosterilmelidir.
+------------------------------------------------------------------------------*/  
+
+	 SELECT B.bolum_isim, P.personel_isim, P.ise_baslama
+	 FROM bolumler B
+	 LEFT JOIN personel P
+	 ON P.bolum_id=B.bolum_id
+	 WHERE B.bolum_�d IN (40,30,50)
+	 ORDER BY B.bolum_isim;
+
+/* -----------------------------------------------------------------------------
+  ORNEK3: T�m bolumlerde calisan personelin isimlerini, bolum isimlerini ve 
+  maaslarini bolum ve maas siraali listeleyiniz. 
+  NOT: calisani olmasa bile bolum ismi gosterilmelidir.
+------------------------------------------------------------------------------*/  
+
+    SELECT b.bolum_isim, p.personel_isim, p.maas
+    FROM   personel p
+    FULL JOIN bolumler b 
+    ON  p.bolum_id = b.bolum_id
+    ORDER BY b.bolum_id,p.maas DESC;
+
+/* -----------------------------------------------------------------------------
+  ORNEK4: SATIS ve MUDURLUK bolumlerinde calisan personelin maaslari 2000'den 
+  buyuk olanlarinin isim,bolum ve maas bilgilerini bolume ve isme gore
+  siralayarak listeleyiniz.
+------------------------------------------------------------------------------*/   
+    SELECT b.bolum_isim, p.personel_isim, p.maas 
+    FROM bolumler b
+    JOIN personel p 
+    ON b.bolum_id = p.bolum_id AND p.maas >= 2000
+    WHERE  b.bolum_id IN(20,30) 
+    ORDER BY b.bolum_id,p.personel_isim;
+ 
+/* -----------------------------------------------------------------------------
+  ORNEK5: MUDUR'u Mesut veya Emine olan personelin bolumlerini,isimlerini,  
+  maaslarini ve mudur isimlerini maas siral� olarak (�oktan aza) listeleyiniz.
+------------------------------------------------------------------------------*/   
+
+    SELECT b.bolum_isim, p.personel_isim,p.maas, 
+                    (SELECT personel_isim FROM personel 
+                     WHERE  personel_id = p.mudur_id) as mudur_adi 
+    FROM bolumler b
+    JOIN personel p 
+    ON b.bolum_id = p.bolum_id
+    WHERE  p.mudur_id IN(7788,7698) 
+    ORDER BY p.maas DESC;
+
+
+
+SELECT b.bolum_isim, p.personel_isim, p.maas
+				  FROM personel p
+				  JOIN bolumler b
+                  ON b.bolum_id = p.bolum_id
+				  ORDER BY p.maas DESC
+				  FETCH NEXT 10 ROWS ONLY;
+
+
+DROP TABLE urunler;
+SELECT * FROM isciler;
+
+
+
+ -- Yasin �zmen
+ 
